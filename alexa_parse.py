@@ -8,12 +8,13 @@ class Alexa:
     def __init__(self,domen):
         self.page = requests.get('https://www.alexa.com/siteinfo/'+domen,headers=headers)
         self.tree = html.fromstring(self.page.content)
-    
+
+    """  ------------ old version ------------------------
+       
     def recursion_print_list(self, obj_list):
-        #print('--------------------------------- recursion --------------------------------')
+        #print('------------- recursion -------------------')
         for o in obj_list:
             if isinstance(o, list):
-                #print('------list------')
                 self.recursion_print_list(o)
                 continue
             if isinstance(o, dict):
@@ -22,27 +23,25 @@ class Alexa:
                     print(key, value)
                 continue
             print('not list and not json:', o)
+    """
 
     @property
     def visitorPercentage(self):
         j = self.tree.xpath('//*[@id="visitorPercentage"]/text()')
         vp = json.loads(j[0])
-        for v in vp:
-            for key, value in v.items():
-                print(key, value)
+        return vp
 
+    @property
     def topKeywords(self):
         j = self.tree.xpath('//*[@id="topKeywordsJSON"]/text()')
-        vp = json.loads(j[0])
-        for key, value in vp.items():
-            if isinstance(value, list):
-                print('-----------key----------', key)
-                self.recursion_print_list(value)
+        tk = json.loads(j[0])
+        return tk
 
+    @property
     def rankDataWindow(self):
         j = self.tree.xpath('//*[@id="rankDataWindow"]/text()')
-        vp = json.loads(j[0])
-        pprint(vp)
+        rdw = json.loads(j[0])
+        return rdw
     
     @property
     def rankData(self):
@@ -52,9 +51,10 @@ class Alexa:
 
 if __name__ == '__main__':
     google = Alexa('google.com')
-    google.rankData
+    pprint(google.rankData)
+    # ----------------------
     mail_ru = Alexa('mail.ru')
-    mail_ru.visitorPercentage
+    pprint(mail_ru.visitorPercentage)
+    # ----------------------
     alexa = Alexa('alexa.com')
-    alexa.topKeywords()
-
+    pprint(alexa.topKeywords)
